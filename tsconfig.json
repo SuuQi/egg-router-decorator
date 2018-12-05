@@ -13,7 +13,6 @@
         "allowJs": false,
         "pretty": true,
         "noEmitOnError": false,
-        "noUnusedLocals": true,
         "noUnusedParameters": true,
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
@@ -22,7 +21,7 @@
         "skipDefaultLibCheck": true,
         "inlineSourceMap": true,
         "importHelpers": true,
-        "outDir": "lib",
+        "outDir": "lib"
     },
     "exclude": [
         "app/public",
