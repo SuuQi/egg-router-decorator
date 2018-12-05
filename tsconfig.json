@@ -1,0 +1,31 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "lib": ["es7", "es6", "dom"],
+        "declaration": false,
+        "noImplicitAny": false,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "charset": "utf8",
+        "allowJs": false,
+        "pretty": true,
+        "noEmitOnError": false,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "noFallthroughCasesInSwitch": true,
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "inlineSourceMap": true,
+        "importHelpers": true,
+        "outDir": "lib",
+    },
+    "exclude": [
+        "app/public",
+        "app/views"
+    ]
+}

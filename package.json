@@ -1,0 +1,35 @@
+{
+    "name": "egg-router-decorator",
+    "version": "1.0.0",
+    "description": "Routers for eggjs by decorator pattern.",
+    "main": "./lib/index.js",
+    "scripts": {
+        "dev": "egg-bin dev -r egg-ts-helper/register",
+        "debug": "egg-bin debug -r egg-ts-helper/register",
+        "cov": "egg-bin cov",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "engines": {
+        "node": ">=8.9.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/SuuQi/egg-router-decorator.git"
+    },
+    "author": "hzsuqin <15957136119@163.com>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/SuuQi/egg-router-decorator/issues"
+    },
+    "homepage": "https://github.com/SuuQi/egg-router-decorator#readme",
+    "devDependencies": {
+        "@types/node": "^10.12.12",
+        "egg": "^2.14.1",
+        "egg-bin": "^4.9.0",
+        "egg-scripts": "^2.10.0",
+        "egg-ts-helper": "^1.17.1",
+        "egg-view-nunjucks": "^2.2.0",
+        "tslib": "^1.9.3",
+        "typescript": "^3.2.1"
+    }
+}
