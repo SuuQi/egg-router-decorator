@@ -1,0 +1,16 @@
+logs/
+npm-debug.log
+node_modules/
+coverage/
+.idea/
+run/
+typings/
+logs/
+.DS_Store
+.vscode/
+!.autod.conf.js
+app/
+config/
+docs/
+tests/
+.editorconfig
