@@ -1,6 +1,6 @@
 {
     "name": "egg-router-decorator",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": "Routers for eggjs by decorator pattern.",
     "main": "./dist/index.js",
     "scripts": {
@@ -8,6 +8,7 @@
         "debug": "egg-bin debug -r egg-ts-helper/register --ts",
         "cov": "egg-bin cov",
         "build": "tsc",
+        "prepublish": "npm run build",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "engines": {
