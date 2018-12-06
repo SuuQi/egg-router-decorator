@@ -1,25 +1,38 @@
-// import { readdirSync } from 'fs';
-// import * as path from 'path';
 import { Application } from 'egg';
 import { Middleware } from 'koa';
+
+export interface RouterOption {
+    httpMethod: string;
+    beforeMiddlewares: Middleware[];
+    handlerName: string;
+    constructorFn: any;
+    className: string;
+}
+
+export interface Router {
+    [key: string]: RouterOption[]
+}
 
 export interface Options {
     prefix?: string
 }
 
-const HTTP_METHODS = ['get', 'post', 'patch', 'del', 'options', 'put']
+const HTTP_METHODS = ['get', 'post', 'patch', 'del', 'options', 'put'];
 
 class RouterDecorator {
+
+    public __classPrefix__ = {}
+    public router: Router = {}
 
     constructor () {
         HTTP_METHODS.forEach(httpMethod => {
             Object.defineProperty(this, httpMethod, {
-                get: () => (url: string, ...middlewares: Middleware[]) => (target: any, name: string) => {
+                get: () => (url: string, ...beforeMiddlewares: Middleware[]) => (target: any, name: string) => {
                     this.setRouter(url, {
                         httpMethod,
-                        middlewares,
-                        handler: name,
-                        constructor: target.constructor,
+                        beforeMiddlewares,
+                        handlerName: name,
+                        constructorFn: target.constructor,
                         className: target.constructor.name
                     });
                 }
@@ -27,45 +40,41 @@ class RouterDecorator {
         })
     }
 
-    public __prefix__ = {}
-    public router = {}
-
-    // scanController () {
-    //     const dir = path.resolve();
-    //     readdirSync(dir + '/app/controller').forEach(file => {
-    //         require(dir + '/app/controller/' + file)
-    //     })
-    // }
-
-    public setRouter (url: string, routerOption) {
-        const controllerPrefixUrl = this.__prefix__[routerOption.className] || '';
-        const fullUrl = controllerPrefixUrl + url;
-        this.router[fullUrl] = this.router[fullUrl] || [];
+    public setRouter (url: string, routerOption: RouterOption) {
+        this.router[url] = this.router[url] || [];
 
         // 安全检测，同路径和方法名直接抛错
-        const equalRouters = this.router[fullUrl].filter(o => o.httpMethod === routerOption.httpMethod);
-        if (equalRouters.length > 0) {
-            throw new Error( `URL * ${routerOption.httpMethod.toUpperCase()} ${fullUrl} * existed` );
-        }
+        // const equalRouters = this.router[url].filter(o => o.httpMethod === routerOption.httpMethod);
+        // if (equalRouters.length > 0) {
+        //     throw new Error( `URL * ${routerOption.httpMethod.toUpperCase()} ${url} * existed` );
+        // }
 
-        this.router[fullUrl].push(routerOption);
+        this.router[url].push(routerOption);
     }
 
-    prefix (prefixUrl: string) {
+    public prefix (prefixUrl: string) {
         return function (targetControllerClass) {
-            instance.__prefix__[prefixUrl] = targetControllerClass.name;
+            instance.__classPrefix__[targetControllerClass.name] = prefixUrl;
             return targetControllerClass;
         }
     }
 }
 
 // 全局唯一实例
-const instance = new RouterDecorator();
+const instance: any = new RouterDecorator();
 
-export const initRouter = (app: Application, options?: Options) => {
-    const { router, controller } = app;
-    console.log(router, controller);
+export const initRouter = (app: Application, options: Options = { prefix: '' }) => {
+    Object.keys(instance.router).forEach(url => {
+        instance.router[url].forEach((opt: RouterOption) => {
+            const controllerPrefix = instance.__classPrefix__[opt.className] || '';
+            const fullUrl = `${options.prefix}${controllerPrefix}${url}`;
+            console.log(`egg-router-decorator setRouter URL * ${opt.httpMethod.toUpperCase()} ${fullUrl} * ${opt.className}.${opt.handlerName}`);
+            app.router[opt.httpMethod](fullUrl, ...opt.beforeMiddlewares, async (ctx) => {
+                const ist = new opt.constructorFn(ctx);
+                await ist[opt.handlerName](ctx);
+            });
+        })
+    });
 };
 
-export default {
-}
+export default instance;
