@@ -121,4 +121,4 @@ class RouterDecorator {
 export const initRouter = RouterDecorator.initRouter;
 
 /** 暴露实例的prefix和http的各个方法 */
-export default new RouterDecorator() as RouterDecorator;
+export default new RouterDecorator();
