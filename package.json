@@ -1,6 +1,6 @@
 {
     "name": "egg-router-decorator",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "Routers for eggjs by decorator pattern.",
     "main": "./dist/index.js",
     "scripts": {
