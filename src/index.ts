@@ -1,9 +1,17 @@
 import { Application } from 'egg';
 import { Middleware } from 'koa';
 
-type classPrefix = string;
+/**
+ * 单个controller的prefix储存的对象类型
+ * @interface ClassPrefixData
+ */
+interface ClassPrefixData {
+    prefix: string;
+    beforeMiddlewares: Middleware[];
+}
+
 interface ClassPrefix {
-    [className: string]: classPrefix;
+    [className: string]: ClassPrefixData;
 }
 
 /**
@@ -42,7 +50,7 @@ class RouterDecorator {
     put: HttpFunction;
 
     /**
-     * 记录各个class的prefix
+     * 记录各个class的prefix以及相关中间件
      * 最后统一设置
      * @private
      * @static
@@ -82,15 +90,20 @@ class RouterDecorator {
     }
 
     /**
-     * 装饰Controller class的工厂函数，
+     * 装饰Controller class的工厂函数
      * 为一整个controller添加prefix
+     * 可以追加中间件
      * @param {string} prefixUrl
+     * @param {...Middleware[]} beforeMiddlewares
      * @returns 装饰器函数
      * @memberof RouterDecorator
      */
-    public prefix (prefixUrl: string) {
+    public prefix (prefixUrl: string, ...beforeMiddlewares: Middleware[]) {
         return function (targetControllerClass) {
-            RouterDecorator.__classPrefix__[targetControllerClass.name] = prefixUrl;
+            RouterDecorator.__classPrefix__[targetControllerClass.name] = {
+                prefix: prefixUrl,
+                beforeMiddlewares: beforeMiddlewares
+            };
             return targetControllerClass;
         }
     }
@@ -105,10 +118,10 @@ class RouterDecorator {
     public static initRouter (app: Application, options = { prefix: '' }) {
         Object.keys(RouterDecorator.__router__).forEach(url => {
             RouterDecorator.__router__[url].forEach((opt: RouterOption) => {
-                const controllerPrefix = RouterDecorator.__classPrefix__[opt.className] || '';
-                const fullUrl = `${options.prefix}${controllerPrefix}${url}`;
+                const controllerPrefixData = RouterDecorator.__classPrefix__[opt.className] || { prefix: '', beforeMiddlewares: [] };
+                const fullUrl = `${options.prefix}${controllerPrefixData.prefix}${url}`;
                 console.log(`egg-router-decorator register URL * ${opt.httpMethod.toUpperCase()} ${fullUrl} * ${opt.className}.${opt.handlerName}`);
-                app.router[opt.httpMethod](fullUrl, ...opt.beforeMiddlewares, async (ctx) => {
+                app.router[opt.httpMethod](fullUrl, ...controllerPrefixData.beforeMiddlewares, ...opt.beforeMiddlewares, async (ctx) => {
                     const ist = new opt.constructorFn(ctx);
                     await ist[opt.handlerName](ctx);
                 });

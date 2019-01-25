@@ -18,7 +18,15 @@ const hasDelAuth = async (ctx, next) => {
     }
 }
 
-@routerDecorator.prefix('/example')
+@routerDecorator.prefix('/example', (ctx, next) => {
+    console.log(ctx.request.URL);
+    console.log('ExampleController的prefix中的中间件1');
+    next();
+}, async (ctx, next) => {
+    await next();
+    console.log(ctx.request.URL);
+    console.log('ExampleController的prefix中的中间件2');
+})
 export default class ExampleController extends Controller {
 
     @routerDecorator.get('/index') // ===>>/example/index get

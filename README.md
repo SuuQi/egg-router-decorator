@@ -75,7 +75,16 @@ Router middleware will run before the target function.
 import { Controller } from 'egg';
 import routerDecorator from 'egg-router-decorator';
 
-@routerDecorator.prefix('/example')
+// @routerDecorator.prefix('/example')
+@routerDecorator.prefix('/example', (ctx, next) => {
+    console.log(ctx.request.URL);
+    console.log('ExampleController的prefix中的中间件1');
+    next();
+}, async (ctx, next) => {
+    await next();
+    console.log(ctx.request.URL);
+    console.log('ExampleController的prefix中的中间件2');
+})
 export default class ExampleController extends Controller {
 
     @routerDecorator.get('/index') // ===>>/example/index get
